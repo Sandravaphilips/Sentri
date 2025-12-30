@@ -1,0 +1,85 @@
+{% extends "sentri/base.html" %}
+
+{% block title %}Log In{% endblock %}
+
+{% block page-content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h2>Log in to Sentri</h2>
+
+                        {% if errors.non_field_errors %}
+                          <div class="alert alert-danger">
+                            {% for error in errors.non_field_errors %}
+                              <div>{{ error }}</div>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+
+                        <form method="post" novalidate action="{% url 'api-login' %}">
+                          {% csrf_token %}
+
+                          <!-- Email -->
+                          <div class="mb-3">
+                            <label for="email" class="form-label">
+                              Email <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control {% if errors.email %}is-invalid{% endif %}"
+                              id="email"
+                              name="email"
+                              value="{{ data.email|default:'' }}"
+                              autofocus
+                            />
+                            {% if errors.email %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.email %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <!-- Password -->
+                          <div class="mb-4">
+                            <label for="password" class="form-label">
+                              Password <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="password"
+                              class="form-control {% if errors.password %}is-invalid{% endif %}"
+                              id="password"
+                              name="password"
+                            />
+                            {% if errors.password %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.password %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <button type="submit" class="btn btn-primary">
+                            Log in
+                          </button>
+                        </form>
+
+                        <div class="d-flex justify-content-between mt-3">
+                          <small>
+                            <a href="{% url 'signup' %}">Create an account</a>
+                          </small>
+                          <small>
+                            <a href="#">Forgot password?</a>
+                          </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

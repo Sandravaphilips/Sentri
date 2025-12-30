@@ -1,0 +1,126 @@
+{% extends "sentri/base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block page-content %}
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h2 class="mb-4">Create your Sentri account</h2>
+
+                        {% if errors.non_field_errors %}
+                          <div class="alert alert-danger">
+                            {% for error in errors.non_field_errors %}
+                              <div>{{ error }}</div>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+
+                        <form method="post" novalidate>
+                          {% csrf_token %}
+
+                          <!-- Email -->
+                          <div class="mb-3">
+                            <label for="email" class="form-label">
+                              Email <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control {% if errors.email %}is-invalid{% endif %}"
+                              id="email"
+                              name="email"
+                              value="{{ data.email|default:'' }}"
+                            />
+                            {% if errors.email %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.email %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <!-- Username -->
+                          <div class="mb-3">
+                            <label for="username" class="form-label">
+                              Username <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control {% if errors.username %}is-invalid{% endif %}"
+                              id="username"
+                              name="username"
+                              value="{{ data.username|default:'' }}"
+                            />
+                            {% if errors.username %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.username %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <!-- Password -->
+                          <div class="mb-3">
+                            <label for="password" class="form-label">
+                              Password <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="password"
+                              class="form-control {% if errors.password %}is-invalid{% endif %}"
+                              id="password"
+                              name="password"
+                            />
+                            {% if errors.password %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.password %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                            <div class="form-text">
+                              Use at least 8 characters.
+                            </div>
+                          </div>
+
+                          <!-- Confirm Password -->
+                          <div class="mb-4">
+                            <label for="password_confirm" class="form-label">
+                              Confirm password <span class="text-danger">*</span>
+                            </label>
+                            <input
+                              type="password"
+                              class="form-control {% if errors.password_confirm %}is-invalid{% endif %}"
+                              id="password_confirm"
+                              name="password_confirm"
+                            />
+                            {% if errors.password_confirm %}
+                              <div class="invalid-feedback">
+                                {% for error in errors.password_confirm %}
+                                  {{ error }}
+                                {% endfor %}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <button type="submit" class="btn btn-primary">
+                            Create account
+                          </button>
+                        </form>
+
+                        <div class="mt-3">
+                          <small>
+                            Already have an account?
+                            <a href="{% url 'login' %}">Log in</a>
+                          </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
