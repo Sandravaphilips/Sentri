@@ -1,25 +1,35 @@
-from .models import APILog
-import datetime
+from logs.constants import AuditEvent
+from logs.services.audit import AuditService
 
-class APILoggingMiddleware:
+
+class APIKeyAuditMiddleware:
+    """
+    Logs API key usage after request processing.
+    """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         response = self.get_response(request)
-        if request.user.is_authenticated:
-            APILog.objects.create(
-                user=request.user,
-                api_key=None,
-                endpoint=request.path,
-                ip_address=self.get_client_ip(request),
-                method=request.method,
-                status_code=response.status_code,
-            )
-        return response
 
-    def get_client_ip(self, request):
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            return x_forwarded_for.split(",")[0]
-        return request.META.get("REMOTE_ADDR")
+        api_key = getattr(request, "api_key", None)
+
+        # Only log if an API key was used
+        if api_key is not None:
+            status = response.status_code
+
+            if status < 400:
+                action = AuditEvent.API_KEY_USED
+            else:
+                action = AuditEvent.APi_KEY_DENIED
+
+            AuditService.log_audit_event(
+                request=request,
+                user=request.user if request.user.is_authenticated else None,
+                action=action,
+                status_code=status,
+                metadata={"api_key_id": str(api_key.id)},
+            )
+
+        return response

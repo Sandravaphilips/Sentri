@@ -18,7 +18,7 @@ class User(AbstractUser):
 
     last_login_at = models.DateTimeField(null=True, blank=True)
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
-    last_login_user_agent = models.TextField(blank=True)
+    last_login_user_agent = models.TextField(max_length=255, blank=True)
 
     is_compromised = models.BooleanField(default=False)
     compromise_reason = models.CharField(max_length=255, blank=True)
@@ -26,7 +26,6 @@ class User(AbstractUser):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

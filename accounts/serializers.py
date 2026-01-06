@@ -57,13 +57,17 @@ class SignupSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
 
+        # This is a hook that should be used for email verification later on
         verification = EmailVerificationService.generate_token(user)
 
         return user
 
 
 class LoginSerializer(TokenObtainPairSerializer):
+    username_field = "email"
+
     def validate(self, attrs):
+        data = super().validate(attrs)
         user = self.user
 
         if user.is_account_locked():
@@ -72,4 +76,4 @@ class LoginSerializer(TokenObtainPairSerializer):
         if user.is_compromised:
             raise AuthenticationFailed("Account flagged for review")
 
-        return super().validate(attrs)
+        return data

@@ -1,15 +1,13 @@
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse, HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
 from django_ratelimit.decorators import ratelimit
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView, TokenObtainPairView
 
 from accounts.serializers import SignupSerializer, LoginSerializer
 from accounts.services import AccountSecurityService
@@ -37,13 +35,13 @@ class APISignupView(APIView):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class APILoginView(View):
+class APILoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        email = request.data.get("email")
+        password = request.data.get("password")
 
         user = User.objects.filter(email=email).first()
 
@@ -56,7 +54,7 @@ class APILoginView(View):
 
         if not serializer.is_valid():
             if user:
-                AccountSecurityService.record_failed_login(user)
+                AccountSecurityService.record_failed_login(user, request)
 
             return JsonResponse(
                 {"detail": "Invalid credentials"},
@@ -66,7 +64,10 @@ class APILoginView(View):
         AccountSecurityService.record_successful_login(user, request)
 
         tokens = serializer.validated_data
-        response = HttpResponseRedirect(reverse_lazy("home"))
+        response = Response(
+                {"detail": "User logged in successfully"},
+                status=status.HTTP_200_OK
+            )
 
         response.set_cookie(
             key="access_token",

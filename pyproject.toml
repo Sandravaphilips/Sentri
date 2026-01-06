@@ -1,0 +1,34 @@
+[project]
+name = "sentri"
+version = "0.1.0"
+description = "Sentri is a security-focused backend platform for authentication, API key management, and audit logging."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+  { name = "Sandrava Philips" }
+]
+
+dependencies = [
+  "cryptography>=46.0",
+  "Django~=4.2",
+  "django-ratelimit>=4.1",
+  "djangorestframework>=3.16",
+  "djangorestframework-simplejwt>=5.3",
+  "psycopg2-binary>=2.9",
+  "python-dotenv>=1.0",
+  "dj-database-url>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black>=23.0",
+  "isort>=5.12",
+  "pytest>=7.0",
+  "pytest-django>=4.5",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
