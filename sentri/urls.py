@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('api/auth/', include('accounts.api_urls')),
     path('api/', include('apikeys.api_urls')),
+    path('api/', include('security.api_urls')),
 
     path('', include('accounts.urls')),
     path('', HomePageView.as_view(), name='home'),

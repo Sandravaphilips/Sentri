@@ -5,6 +5,8 @@ from rest_framework import status
 
 from logs.constants import AuditEvent
 from logs.services.audit import AuditService
+from security.models import SecurityEvent
+from security.services.event import SecurityEventService
 
 MAX_ATTEMPTS = 5
 LOCK_DURATION = timedelta(minutes=15)
@@ -38,31 +40,36 @@ class AccountSecurityService:
 
     @staticmethod
     def record_failed_login(user, request):
+        was_locked = user.is_account_locked()
+
         user.failed_login_attempts += 1
 
-        if user.failed_login_attempts >= MAX_ATTEMPTS:
+        if user.failed_login_attempts >= MAX_ATTEMPTS and not was_locked:
             user.account_locked_until = timezone.now() + LOCK_DURATION
 
-        user.save(update_fields=[
-            "failed_login_attempts",
-            "account_locked_until",
-        ])
+            SecurityEventService.emit(
+                event_type=SecurityEvent.EventType.ACCOUNT_LOCKED,
+                severity=SecurityEvent.Severity.HIGH,
+                user=user,
+                request=request,
+                metadata={
+                    "failed_attempts": user.failed_login_attempts,
+                    "locked_until": user.account_locked_until.isoformat()
+                },
+            )
 
-        AuditService.log_audit_event(
-            request=request,
-            user=user,
-            action=AuditEvent.LOGIN_FAILED,
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            metadata={
-                "failed_attempts": user.failed_login_attempts,
-                "locked": user.is_account_locked(),
-            },
-        )
-
-        if user.is_account_locked():
             AuditService.log_audit_event(
                 request=request,
                 user=user,
                 action=AuditEvent.ACCOUNT_LOCKED,
                 status_code=status.HTTP_403_FORBIDDEN,
+                metadata={
+                    "failed_attempts": user.failed_login_attempts,
+                    "locked_until": user.account_locked_until.isoformat()
+                },
             )
+
+        user.save(update_fields=[
+            "failed_login_attempts",
+            "account_locked_until",
+        ])

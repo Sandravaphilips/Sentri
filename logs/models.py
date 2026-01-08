@@ -8,9 +8,18 @@ from apikeys.models import APIKey
 
 class AuditLog(models.Model):
     ACTION_CHOICES = [
+        ("signup_success", "Signup success"),
+        ("login_success", "Login success"),
+        ("account_locked", "Account locked"),
+        ("account_unlocked", "Account unlocked"),
+        ("account_compromised", "Account compromised"),
+        ("compromise_cleared", "Compromise cleared"),
+        ("api_key_created", "API key created"),
         ("api_key_used", "API key used"),
         ("api_key_denied", "API key denied"),
         ("api_key_revoked", "API key revoked"),
+        ("all_api_keys_revoked", "All API keys revoked"),
+        ("api_key_rate_limited", "API key rate limited"),
     ]
 
     user = models.ForeignKey(

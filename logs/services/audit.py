@@ -6,7 +6,7 @@ class AuditService:
     @staticmethod
     def log_audit_event(
         *,
-        request,
+        request=None,
         action,
         user=None,
         api_key=None,
