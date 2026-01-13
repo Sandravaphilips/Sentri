@@ -1,0 +1,59 @@
+{% extends "admin/security/layout.html" %}
+
+{% block title %}Security Overview{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">Overview</li>
+{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Security Overview</h2>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card p-3">
+                <strong>Total Users</strong>
+                <h3>{{ total_users }}</h3>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card p-3">
+                <strong>Locked Accounts</strong>
+                <h3>{{ locked_users }}</h3>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card p-3">
+                <strong>Compromised Accounts</strong>
+                <h3 class="text-danger">{{ compromised_users }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <h4>Recent Security Events</h4>
+
+    <table class="table table-sm table-striped">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Event</th>
+            <th>Severity</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in recent_events %}
+            <tr>
+                <td>{{ event.created_at }}</td>
+                <td>{{ event.user.email|default:"—" }}</td>
+                <td>{{ event.event_type }}</td>
+                <td>{{ event.severity }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No events</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

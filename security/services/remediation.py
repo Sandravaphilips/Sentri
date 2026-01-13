@@ -8,16 +8,8 @@ from apikeys.models import APIKey
 
 
 class RemediationService:
-    """
-    Handles explicit security remediation actions.
-    """
-
     @staticmethod
     def unlock_account(*, user, reason=None):
-        """
-        Unlock a locked user account.
-        """
-
         if not user.is_account_locked():
             return
 
@@ -47,10 +39,6 @@ class RemediationService:
         user,
         reason=None,
     ):
-        """
-        Clear compromised state after remediation.
-        """
-
         if not user.is_compromised:
             return
 
@@ -82,11 +70,6 @@ class RemediationService:
         user,
         reason,
     ):
-        """
-        Revoke all active API keys for a user.
-        Returns number of revoked keys.
-        """
-
         keys = APIKey.objects.filter(
             user=user,
             is_revoked=False,

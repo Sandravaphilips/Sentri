@@ -1,17 +1,10 @@
 from rest_framework.permissions import BasePermission
 
 from security.models import SecurityEvent
-from security.services import SecurityEventService
+from security.services import SecurityEventService, CompromiseDetectionService
 
 
 class HasAPIKeyScope(BasePermission):
-    """
-    Enforces API key scopes on views.
-
-    Usage:
-        required_scopes = ["read:events"]
-    """
-
     def has_permission(self, request, view):
         api_key = getattr(request, "api_key", None)
         required_scope = getattr(view, "required_scope", None)
@@ -32,6 +25,9 @@ class HasAPIKeyScope(BasePermission):
                     "path": request.path,
                 },
             )
+
+            CompromiseDetectionService.evaluate_user(request.user)
+
             return False
 
         return True

@@ -16,15 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from sentri.views import HomePageView
-
 urlpatterns = [
+    path("admin/security/", include("security.admin_urls")),
     path('admin/', admin.site.urls),
+
 
     path('api/auth/', include('accounts.api_urls')),
     path('api/', include('apikeys.api_urls')),
     path('api/', include('security.api_urls')),
 
+    path("dashboard/", include("dashboard.urls")),
     path('', include('accounts.urls')),
-    path('', HomePageView.as_view(), name='home'),
 ]

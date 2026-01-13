@@ -4,10 +4,6 @@ from apikeys.limits import API_KEY_RATE_LIMITS
 
 
 class APIKeyRateLimitService:
-    """
-    Service responsible for rate limiting requests to APIKeys
-    """
-
     @staticmethod
     def get_cache_key(api_key_id):
         return f"rate_limit:api_key:{api_key_id}"
@@ -21,18 +17,7 @@ class APIKeyRateLimitService:
 
         now = timezone.now()
 
-        if not data:
-            cache.set(
-                cache_key,
-                {
-                    "count": 1,
-                    "reset_at": now + policy["window"],
-                },
-                timeout=int(policy["window"].total_seconds()),
-            )
-            return True
-
-        if now > data["reset_at"]:
+        if not data or now > data["reset_at"]:
             cache.set(
                 cache_key,
                 {

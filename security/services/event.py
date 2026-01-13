@@ -4,11 +4,6 @@ from security.models import SecurityEvent
 
 
 class SecurityEventService:
-    """
-    Centralized service for emitting security events.
-
-    """
-
     @staticmethod
     def emit(
         *,
@@ -21,12 +16,6 @@ class SecurityEventService:
         user_agent=None,
         metadata=None,
     ):
-        """
-        Emit a security event with optional context.
-
-        Keyword-only arguments are enforced to avoid misuse.
-        """
-
         if metadata is None:
             metadata = {}
 
@@ -50,9 +39,7 @@ class SecurityEventService:
     @staticmethod
     def _get_ip(request):
         """
-        Extract client IP address from request.
-
-        Minimal implementation to avoid dependency hub
+        Implementation to avoid dependency hub
         """
         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:

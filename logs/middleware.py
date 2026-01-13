@@ -3,10 +3,6 @@ from logs.services.audit import AuditService
 
 
 class APIKeyAuditMiddleware:
-    """
-    Logs API key usage after request processing.
-    """
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -15,7 +11,6 @@ class APIKeyAuditMiddleware:
 
         api_key = getattr(request, "api_key", None)
 
-        # Only log if an API key was used
         if api_key is not None:
             status = response.status_code
 

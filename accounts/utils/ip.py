@@ -1,12 +1,7 @@
-from django.conf import settings
-
-
 def get_client_ip(request):
-    remote_addr = request.META.get("REMOTE_ADDR")
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
 
-    if remote_addr in settings.ALLOWED_HOSTS:
-        xff = request.META.get("HTTP_X_FORWARDED_FOR")
-        if xff:
-            return xff.split(",")[0].strip()
+    if x_forwarded_for:
+        return x_forwarded_for.split(",")[0].strip()
 
-    return remote_addr
+    return request.META.get("REMOTE_ADDR")

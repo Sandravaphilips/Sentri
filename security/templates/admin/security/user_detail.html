@@ -1,0 +1,124 @@
+{% extends "admin/security/layout.html" %}
+
+{% block title %}User Security{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">
+        <a href="{% url 'security_admin:user_list' %}">Users</a>
+    </li>
+    <li class="breadcrumb-item active">
+        {{ user_obj }}
+    </li>
+{% endblock %}
+
+
+{% block content %}
+    <h2 class="mb-3">{{ user_obj.email }}</h2>
+
+    <div class="mb-4">
+        <p>
+            <strong>Status:</strong>
+            {% if user_obj.is_compromised %}
+                <span class="badge badge-critical">Compromised</span>
+            {% elif user_obj.is_account_locked %}
+                <span class="badge badge-warning">Locked</span>
+            {% else %}
+                <span class="badge badge-ok">Normal</span>
+            {% endif %}
+        </p>
+
+        {% if user_obj.account_locked_until %}
+            <p><strong>Locked Until:</strong> {{ user_obj.account_locked_until }}</p>
+        {% endif %}
+
+        <p><strong>Active API Keys:</strong> {{ api_key_count }}</p>
+    </div>
+
+    <hr/>
+
+    <h4>Remediation Actions</h4>
+
+    <div class="mb-4">
+        <form method="post" action="{% url 'security_admin:unlock_user' user_obj.id %}">
+            {% csrf_token %}
+            <button class="btn btn-warning mb-2"
+                    onclick="return confirm('Unlock this account?')">
+                Unlock Account
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'security_admin:clear_compromise' user_obj.id %}">
+            {% csrf_token %}
+            <button class="btn btn-danger mb-2"
+                    onclick="return confirm('Clear compromise flag?')">
+                Clear Compromise
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'security_admin:revoke_keys' user_obj.id %}">
+            {% csrf_token %}
+            <button class="btn btn-secondary"
+                    onclick="return confirm('Revoke ALL API keys for this user?')">
+                Revoke API Keys
+            </button>
+        </form>
+    </div>
+
+    <hr/>
+
+    <h4>Recent Security Events</h4>
+
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Event</th>
+            <th>Severity</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in security_events %}
+            <tr>
+                <td>{{ event.created_at }}</td>
+                <td>{{ event.event_type }}</td>
+                <td>{{ event.severity }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">No events</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}">
+                            Previous
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+      <span class="page-link">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}">
+                            Next
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% endblock %}
