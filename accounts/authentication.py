@@ -7,10 +7,6 @@ from security.services import SecurityEventService
 
 
 class CookieJWTAuthentication(JWTAuthentication):
-    """
-    Authenticate using JWT stored in an HTTP-only cookie.
-    """
-
     access_cookie_name = "access_token"
 
     def authenticate(self, request):

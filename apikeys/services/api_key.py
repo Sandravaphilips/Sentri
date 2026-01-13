@@ -13,26 +13,14 @@ from security.services import SecurityEventService
 
 
 class APIKeyService:
-    """
-    Service responsible for API key generation and hashing.
-    """
-
-    KEY_PREFIX = "sk_"  # Helps identify key type quickly
+    KEY_PREFIX = "sk_"
 
     @staticmethod
     def generate_raw_key():
-        """
-        Generates a cryptographically secure raw API key.
-        Returned value is shown ONCE to the user.
-        """
         return f"{APIKeyService.KEY_PREFIX}{secrets.token_urlsafe(32)}"
 
     @staticmethod
     def hash_key(raw_key):
-        """
-        Hashes the API key using HMAC-SHA256.
-        The raw key is never stored.
-        """
         return hmac.new(
             key=settings.SECRET_KEY.encode(),
             msg=raw_key.encode(),
@@ -41,12 +29,6 @@ class APIKeyService:
 
     @staticmethod
     def create_key(*, user, name, scopes, expires_at=None):
-        """
-        Creates a new API key for a user.
-
-        Returns:
-            (api_key_instance, raw_key)
-        """
         if user.is_compromised:
             SecurityEventService.emit(
                 event_type=SecurityEvent.EventType.API_KEY_CREATION_BLOCKED,

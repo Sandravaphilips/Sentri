@@ -7,29 +7,18 @@ from accounts.models import User
 
 
 class CompromiseDetectionService:
-    """
-    Evaluates security events to determine if a user account
-    should be flagged as compromised.
-    """
-
     LOGIN_FAILURE_WINDOW = timedelta(minutes=10)
-
     SCOPE_VIOLATION_THRESHOLD = 3
     SCOPE_VIOLATION_WINDOW = timedelta(minutes=5)
 
     @classmethod
     def evaluate_user(cls, user: User) -> bool:
-        """
-        Evaluate all compromise rules for a user.
-        Returns True if the user is newly marked as compromised.
-        """
-
         if user.is_compromised:
             return False
 
         now = timezone.now()
 
-        if cls._login_failure_rule(user, now):
+        if cls._login_failure_rule(user):
             cls._mark_compromised(
                 user,
                 reason="Excessive login failures detected",
@@ -52,12 +41,8 @@ class CompromiseDetectionService:
 
         return False
 
-    # ───────────────────────────────
-    # Individual rules
-    # ───────────────────────────────
-
     @classmethod
-    def _login_failure_rule(cls, user, now):
+    def _login_failure_rule(cls, user):
         last_lock = SecurityEvent.objects.filter(
             user=user,
             event_type=SecurityEvent.EventType.ACCOUNT_LOCKED,
@@ -104,10 +89,6 @@ class CompromiseDetectionService:
             event_type=SecurityEvent.EventType.API_KEY_AUTH_FAILED,
             metadata__reason__in=["key_revoked", "key_expired"],
         ).exists()
-
-    # ───────────────────────────────
-    # State mutation
-    # ───────────────────────────────
 
     @staticmethod
     def _mark_compromised(user, reason):

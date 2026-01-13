@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "accounts",
     "apikeys",
     "logs",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication
 
+AUTHENTICATION_BACKENDS = [
+    "accounts.auth_backends.SentriAuthBackend",
+]
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "apikeys.authentication.APIKeyAuthentication",
@@ -187,3 +192,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Encryption
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
+
+
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "login"

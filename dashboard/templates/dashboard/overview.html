@@ -1,0 +1,146 @@
+{% extends "sentri/base.html" %}
+
+{% block title %}My Security Dashboard{% endblock %}
+
+{% block body-class %}bg-light{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">Sentri</span>
+            <div class="d-flex align-items-center">
+                {% if request.user.is_staff %}
+                    <a
+                        href="{% url 'security_admin:overview' %}"
+                        class="btn btn-sm btn-outline-warning me-3"
+                    >
+                        Admin Security
+                    </a>
+                {% endif %}
+
+                <span class="navbar-text text-light small">
+                    {{ request.user }}
+                </span>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-light ms-2">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block page-content %}
+    <div class="container">
+        <h2 class="mb-4">My Security Status</h2>
+
+        <div class="mb-4">
+            <p>
+                <strong>Account Status:</strong>
+                {% if user_obj.is_compromised %}
+                    <span class="badge bg-danger">Under Review</span>
+                {% elif user_obj.is_account_locked %}
+                    <span class="badge bg-warning text-dark">Locked</span>
+                {% else %}
+                    <span class="badge bg-success">Normal</span>
+                {% endif %}
+            </p>
+
+            {% if user_obj.account_locked_until %}
+                <p>
+                    <strong>Locked Until:</strong>
+                    {{ user_obj.account_locked_until }}
+                </p>
+            {% endif %}
+        </div>
+
+        <hr/>
+
+        <div class="mb-4">
+            <h5>Recent Activity</h5>
+            <p class="text-muted">
+                Last login from {{ user_obj.last_login_ip }} using
+                {{ user_obj.last_login_user_agent|default:"unknown device" }}
+            </p>
+        </div>
+
+        <hr/>
+
+        <div class="mb-4">
+            <h5>API Keys</h5>
+            <p>
+                Active API keys: <strong>{{ api_key_count }}</strong>
+            </p>
+        </div>
+
+        <hr/>
+
+        <h5>Recent Security Events</h5>
+
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Severity</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in recent_events %}
+                <tr>
+                    <td>{{ event.created_at }}</td>
+                    <td>{{ event.event_type }}</td>
+                    <td>{{ event.severity }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No recent events</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {% if is_paginated %}
+        <nav aria-label="Security events pagination">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}">
+                            Previous
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                  <span class="page-link">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                  </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}">
+                            Next
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% endblock %}

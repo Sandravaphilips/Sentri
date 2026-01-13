@@ -1,0 +1,73 @@
+{% extends "sentri/base.html" %}
+
+{% block title %} Sentri Admin {% endblock %}
+
+{% block styles %}
+    body { background-color: #f8f9fa; }
+    .badge-critical { background-color: #dc3545; }
+    .badge-warning { background-color: #ffc107; color: #000; }
+    .badge-ok { background-color: #198754; }
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'security_admin:overview' %}">
+                Sentri Admin
+            </a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'security_admin:overview' %}">
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'security_admin:user_list' %}">
+                            Users
+                        </a>
+                    </li>
+                </ul>
+
+                <span class="navbar-text text-light small">
+                    {{ request.user }}
+                </span>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-light ms-2">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+{% endblock %}
+
+{% block page-content %}
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block breadcrumbs %}
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'dashboard:overview' %}">My Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'security_admin:overview' %}">Admin Security</a>
+                    </li>
+                    {% block breadcrumb_items %}{% endblock %}
+                </ol>
+            </nav>
+        {% endblock %}
+
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}

@@ -21,7 +21,6 @@
                         <form method="post" novalidate>
                           {% csrf_token %}
 
-                          <!-- Email -->
                           <div class="mb-3">
                             <label for="email" class="form-label">
                               Email <span class="text-danger">*</span>
@@ -42,7 +41,6 @@
                             {% endif %}
                           </div>
 
-                          <!-- Username -->
                           <div class="mb-3">
                             <label for="username" class="form-label">
                               Username <span class="text-danger">*</span>
@@ -63,7 +61,6 @@
                             {% endif %}
                           </div>
 
-                          <!-- Password -->
                           <div class="mb-3">
                             <label for="password" class="form-label">
                               Password <span class="text-danger">*</span>
@@ -86,7 +83,6 @@
                             </div>
                           </div>
 
-                          <!-- Confirm Password -->
                           <div class="mb-4">
                             <label for="password_confirm" class="form-label">
                               Confirm password <span class="text-danger">*</span>

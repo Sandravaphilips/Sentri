@@ -8,13 +8,6 @@ from security.services import SecurityEventService, CompromiseDetectionService
 
 
 class APIKeyAuthentication(BaseAuthentication):
-    """
-    Authenticate requests using an API key.
-
-    Expected header:
-        Authorization: Api-Key <key>
-    """
-
     keyword = "Api-Key"
 
     def authenticate(self, request):
@@ -93,6 +86,7 @@ class APIKeyAuthentication(BaseAuthentication):
                 request=request,
                 metadata={"reason": "user_compromised"},
             )
+
             raise AuthenticationFailed(_("Account under security review."))
 
         if user.is_account_locked():
@@ -104,6 +98,7 @@ class APIKeyAuthentication(BaseAuthentication):
                 request=request,
                 metadata={"reason": "account_locked"},
             )
+
             raise AuthenticationFailed(_("Account temporarily locked."))
 
         request.api_key = api_key

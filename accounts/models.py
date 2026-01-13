@@ -37,10 +37,6 @@ class User(AbstractUser):
         )
 
     def lock_remaining_seconds(self):
-        """
-        Returns remaining lockout time in seconds.
-        Returns 0 if the account is not locked.
-        """
         if not self.is_account_locked():
             return 0
 

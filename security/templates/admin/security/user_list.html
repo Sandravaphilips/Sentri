@@ -1,0 +1,74 @@
+{% extends "admin/security/layout.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">Users</li>
+{% endblock %}
+
+
+{% block content %}
+    <h2 class="mb-4">Users</h2>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>
+                    <a href="{% url 'security_admin:user_detail' user.id %}">
+                        {{ user.email }}
+                    </a>
+                </td>
+                <td>
+                    {% if user.is_compromised %}
+                        <span class="badge badge-critical">Compromised</span>
+                    {% elif user.is_account_locked %}
+                        <span class="badge badge-warning">Locked</span>
+                    {% else %}
+                        <span class="badge badge-ok">OK</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.updated_at }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}">
+                            Previous
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+      <span class="page-link">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}">
+                            Next
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% endblock %}

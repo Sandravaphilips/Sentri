@@ -7,10 +7,6 @@ from logs.services.audit import AuditService
 
 
 class APIKeyRateLimitMiddleware:
-    """
-    Enforces per-API-key rate limits.
-    """
-
     def __init__(self, get_response):
         self.get_response = get_response
 

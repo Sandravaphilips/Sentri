@@ -10,71 +10,65 @@
                     <div class="card-body p-4">
                         <h2>Log in to Sentri</h2>
 
-                        {% if errors.non_field_errors %}
-                          <div class="alert alert-danger">
-                            {% for error in errors.non_field_errors %}
-                              <div>{{ error }}</div>
-                            {% endfor %}
-                          </div>
-                        {% endif %}
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
 
-                        <form method="post" novalidate action="{% url 'api-login' %}">
-                          {% csrf_token %}
-
-                          <!-- Email -->
-                          <div class="mb-3">
-                            <label for="email" class="form-label">
-                              Email <span class="text-danger">*</span>
-                            </label>
-                            <input
-                              type="email"
-                              class="form-control {% if errors.email %}is-invalid{% endif %}"
-                              id="email"
-                              name="email"
-                              value="{{ data.email|default:'' }}"
-                              autofocus
-                            />
-                            {% if errors.email %}
-                              <div class="invalid-feedback">
-                                {% for error in errors.email %}
-                                  {{ error }}
-                                {% endfor %}
-                              </div>
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    Login failed. If your account is locked, please wait before trying again.
+                                </div>
                             {% endif %}
-                          </div>
 
-                          <!-- Password -->
-                          <div class="mb-4">
-                            <label for="password" class="form-label">
-                              Password <span class="text-danger">*</span>
-                            </label>
-                            <input
-                              type="password"
-                              class="form-control {% if errors.password %}is-invalid{% endif %}"
-                              id="password"
-                              name="password"
-                            />
-                            {% if errors.password %}
-                              <div class="invalid-feedback">
-                                {% for error in errors.password %}
-                                  {{ error }}
-                                {% endfor %}
-                              </div>
-                            {% endif %}
-                          </div>
+                            <div class="mb-4">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    {{ form.username.label }}
+                                </label>
+                                <input
+                                    type="{{ form.username.field.widget.input_type }}"
+                                    class="form-control"
+                                    id="{{ form.username.id_for_label }}"
+                                    name="{{ form.username.name }}"
+                                    autofocus
+                                />
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.username.errors %}
+                                            <p class="m-1">{{ error }}</p>{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-                          <button type="submit" class="btn btn-primary">
-                            Log in
-                          </button>
+                            <div class="mb-4">
+                                <label class="form-label"
+                                       for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="{{ form.password.id_for_label }}"
+                                    name="{{ form.password.name }}"
+                                    required
+                                />
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password.errors %}
+                                            <p class="m-1">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Log in
+                            </button>
                         </form>
 
                         <div class="d-flex justify-content-between mt-3">
-                          <small>
-                            <a href="{% url 'signup' %}">Create an account</a>
-                          </small>
-                          <small>
-                            <a href="#">Forgot password?</a>
-                          </small>
+                            <small>
+                                <a href="{% url 'signup' %}">Create an account</a>
+                            </small>
+                            <small>
+                                <a href="{% url 'password_reset' %}">Forgot password?</a>
+                            </small>
                         </div>
                     </div>
                 </div>
