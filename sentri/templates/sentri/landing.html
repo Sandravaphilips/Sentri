@@ -1,0 +1,29 @@
+{% extends "sentri/base.html" %}
+
+{% block body-class %}bg-light{% endblock %}
+
+{% block page-content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+
+                <h1 class="mb-3">Sentri</h1>
+
+                <p class="lead">
+                    Sentri is a small security-focused Django project built for learning
+                    and experimentation around authentication, API access, and security events.
+                </p>
+
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <a
+                            href="{% url 'login' %}"
+                            class="btn btn-outline-primary"
+                    >
+                        Login
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

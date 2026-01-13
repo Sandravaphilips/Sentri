@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from sentri.views import LandingPageView
+
 urlpatterns = [
     path("admin/security/", include("security.admin_urls")),
     path('admin/', admin.site.urls),
 
+    path("", LandingPageView.as_view(), name="landing"),
 
     path('api/auth/', include('accounts.api_urls')),
     path('api/', include('apikeys.api_urls')),
